@@ -183,4 +183,52 @@ public class RentalManager {
         return transaction;
     }
 
+    // Return a movie
+    public boolean returnMovie(String transactionId) {
+        System.out.println("RentalManager: Starting return process for transaction: " + transactionId);
+
+        Transaction transaction = getTransactionById(transactionId);
+        if (transaction == null) {
+            System.out.println("RentalManager: Transaction not found");
+            return false;
+        }
+
+        if (transaction.isReturned() || transaction.isCanceled()) {
+            System.out.println("RentalManager: Movie already returned or rental canceled");
+            return false;
+        }
+
+        // Set return date and update returned status
+        Date returnDate = new Date();
+        transaction.setReturnDate(returnDate);
+        transaction.setReturned(true);
+
+        // Calculate late fee if applicable
+        if (returnDate.after(transaction.getDueDate())) {
+            int daysLate = transaction.calculateDaysOverdue();
+            User user = userManager.getUserById(transaction.getUserId());
+
+            double lateFee = calculateLateFee(user, daysLate);
+            transaction.setLateFee(lateFee);
+            System.out.println("RentalManager: Added late fee of " + lateFee);
+        }
+
+        // Update movie availability
+        Movie movie = movieManager.getMovieById(transaction.getMovieId());
+        if (movie != null) {
+            movie.setAvailable(true);
+            movieManager.updateMovie(movie);
+            System.out.println("RentalManager: Updated movie availability");
+        } else {
+            System.out.println("RentalManager: Warning - Movie not found when returning");
+        }
+
+        // Save updated transaction
+        saveTransactions();
+        System.out.println("RentalManager: Return process completed successfully");
+
+        return true;
     }
+
+
+}
