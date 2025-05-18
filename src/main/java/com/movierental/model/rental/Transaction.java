@@ -202,6 +202,90 @@ public class Transaction {
         return new Date().after(dueDate);
     }
 
+    // Check if the rental is active (not returned and not canceled)
+    public boolean isActive() {
+        return !returned && !canceled;
+    }
+
+    // Convert transaction to string representation for file storage
+    public String toFileString() {
+        return transactionId + "," +
+                userId + "," +
+                movieId + "," +
+                rentalDate.getTime() + "," +
+                dueDate.getTime() + "," +
+                (returnDate != null ? returnDate.getTime() : "0") + "," +
+                rentalFee + "," +
+                lateFee + "," +
+                returned + "," +
+                canceled + "," +
+                (cancellationReason != null ? cancellationReason.replace(",", "\\,") : "") + "," +
+                (cancellationDate != null ? cancellationDate.getTime() : "0");
+    }
+
+    // Create transaction from string representation (from file)
+    public static Transaction fromFileString(String fileString) {
+        String[] parts = fileString.split(",(?=([^\\\\]|\\\\[^,])*$)", -1); // Split by comma, accounting for escaped commas
+
+        Transaction transaction = new Transaction();
+
+        if (parts.length >= 9) {
+            transaction.setTransactionId(parts[0]);
+            transaction.setUserId(parts[1]);
+            transaction.setMovieId(parts[2]);
+            transaction.setRentalDate(new Date(Long.parseLong(parts[3])));
+            transaction.setDueDate(new Date(Long.parseLong(parts[4])));
+
+            long returnDateLong = Long.parseLong(parts[5]);
+            if (returnDateLong > 0) {
+                transaction.setReturnDate(new Date(returnDateLong));
+            }
+
+            transaction.setRentalFee(Double.parseDouble(parts[6]));
+            transaction.setLateFee(Double.parseDouble(parts[7]));
+            transaction.setReturned(Boolean.parseBoolean(parts[8]));
+
+            // Handle additional fields if they exist
+            if (parts.length >= 10) {
+                transaction.setCanceled(Boolean.parseBoolean(parts[9]));
+            }
+
+            if (parts.length >= 11) {
+                String reason = parts[10];
+                if (!reason.isEmpty()) {
+                    transaction.setCancellationReason(reason.replace("\\,", ","));
+                }
+            }
+
+            if (parts.length >= 12) {
+                long cancelDateLong = Long.parseLong(parts[11]);
+                if (cancelDateLong > 0) {
+                    transaction.setCancellationDate(new Date(cancelDateLong));
+                }
+            }
+
+            return transaction;
+        }
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "transactionId='" + transactionId + '\'' +
+                ", userId='" + userId + '\'' +
+                ", movieId='" + movieId + '\'' +
+                ", rentalDate=" + rentalDate +
+                ", dueDate=" + dueDate +
+                ", returnDate=" + returnDate +
+                ", rentalFee=" + rentalFee +
+                ", lateFee=" + lateFee +
+                ", returned=" + returned +
+                ", canceled=" + canceled +
+                ", cancellationReason='" + cancellationReason + '\'' +
+                ", cancellationDate=" + cancellationDate +
+                '}';
+    }
 
 
 }
