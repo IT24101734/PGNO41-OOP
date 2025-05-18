@@ -202,10 +202,6 @@ public class Transaction {
         return new Date().after(dueDate);
     }
 
-    // Check if the rental is active (not returned and not canceled)
-    public boolean isActive() {
-        return !returned && !canceled;
-    }
 
 
 }
