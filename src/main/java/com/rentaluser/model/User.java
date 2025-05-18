@@ -7,4 +7,19 @@ public class User {
     private String email;
     private String fullName;
 
+    public User(String userId, String username, String password, String email, String fullName) {
+        this.userId = userId;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.fullName = fullName;
+    }
+
+    public User() {
+        this.userId = "";
+        this.username = "";
+        this.password = "";
+        this.email = "";
+        this.fullName = "";
+    }
 }
