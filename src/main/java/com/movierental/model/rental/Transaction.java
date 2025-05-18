@@ -164,6 +164,48 @@ public class Transaction {
         this.cancellationDate = cancellationDate;
     }
 
+    // Calculate days overdue if the movie is late
+    public int calculateDaysOverdue() {
+        if (returned && returnDate != null && returnDate.after(dueDate)) {
+            long diffInMillies = returnDate.getTime() - dueDate.getTime();
+            return (int) (diffInMillies / (1000 * 60 * 60 * 24)) + 1; // +1 to include the due date
+        }
+        return 0;
+    }
+
+    // Calculate days remaining in the rental period
+    public int calculateDaysRemaining() {
+        if (returned || canceled) {
+            return 0;
+        }
+
+        Date currentDate = new Date();
+        if (currentDate.after(dueDate)) {
+            return 0; // No days remaining, already overdue
+        }
+
+        long diffInMillies = dueDate.getTime() - currentDate.getTime();
+        return (int) (diffInMillies / (1000 * 60 * 60 * 24)) + 1; // +1 to include today
+    }
+
+    // Get rental duration in days
+    public int getRentalDuration() {
+        long diffInMillies = dueDate.getTime() - rentalDate.getTime();
+        return (int) (diffInMillies / (1000 * 60 * 60 * 24)) + 1; // +1 to include the start date
+    }
+
+    // Check if the rental is currently overdue
+    public boolean isOverdue() {
+        if (returned || canceled) {
+            return false;
+        }
+        return new Date().after(dueDate);
+    }
+
+    // Check if the rental is active (not returned and not canceled)
+    public boolean isActive() {
+        return !returned && !canceled;
+    }
 
 
 }
