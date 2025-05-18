@@ -1,6 +1,7 @@
 package com.rentaluser.model;
 
 import java.io.File;
+import java.util.UUID;
 
 public class UserManager {
     public class UserManager {
@@ -49,6 +50,31 @@ public class UserManager {
             }
 
             System.out.println("UserManager: Using data file path: " + dataFilePath);
+        }
+        public boolean addUser(User user) {
+            try {
+                // Check if username already exists
+                System.out.println("Adding new user: " + user.getUsername());
+
+                if (getUserByUsername(user.getUsername()) != null) {
+                    System.out.println("Username already exists: " + user.getUsername());
+                    return false;
+                }
+
+                // Generate a unique ID if not provided
+                if (user.getUserId() == null || user.getUserId().isEmpty()) {
+                    user.setUserId(UUID.randomUUID().toString());
+                }
+
+                users.add(user);
+                boolean saved = saveUsers();
+                System.out.println("User saved successfully: " + saved);
+                return saved;
+            } catch (Exception e) {
+                System.err.println("Exception occurred when adding user:");
+                e.printStackTrace();
+                return false;
+            }
         }
 
 
