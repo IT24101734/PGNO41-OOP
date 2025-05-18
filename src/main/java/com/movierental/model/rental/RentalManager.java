@@ -311,5 +311,84 @@ public class RentalManager {
         return true;
     }
 
+    // Calculate rental fee based on user type and movie
+    private double calculateRentalFee(User user, Movie movie, int days) {
+        double movieFee = movie.calculateRentalPrice(days);
+        System.out.println("RentalManager: Base movie fee: " + movieFee);
+
+        // Apply user discount if applicable
+        if (user instanceof PremiumUser) {
+            double discountedFee = movieFee * 0.8; // 20% discount for premium users
+            System.out.println("RentalManager: Applied premium discount: " + discountedFee);
+            return discountedFee;
+        }
+
+        return movieFee; // Regular price for regular users
+    }
+
+    // Calculate late fee based on user type and days late
+    private double calculateLateFee(User user, int daysLate) {
+        if (daysLate <= 0) {
+            return 0.0;
+        }
+
+        if (user instanceof PremiumUser) {
+            return ((PremiumUser) user).calculateLateFee(daysLate);
+        } else if (user instanceof RegularUser) {
+            return ((RegularUser) user).calculateLateFee(daysLate);
+        } else {
+            // Default late fee calculation
+            return 1.0 * daysLate;
+        }
+    }
+
+    // Get transaction by ID
+    public Transaction getTransactionById(String transactionId) {
+        for (Transaction transaction : transactions) {
+            if (transaction.getTransactionId().equals(transactionId)) {
+                return transaction;
+            }
+        }
+        return null;
+    }
+
+    // Get all transactions
+    public List<Transaction> getAllTransactions() {
+        return new ArrayList<>(transactions);
+    }
+
+    // Get transactions by user ID
+    public List<Transaction> getTransactionsByUser(String userId) {
+        List<Transaction> userTransactions = new ArrayList<>();
+        for (Transaction transaction : transactions) {
+            if (transaction.getUserId().equals(userId)) {
+                userTransactions.add(transaction);
+            }
+        }
+        return userTransactions;
+    }
+
+    // Get active (not returned and not canceled) rentals by user ID
+    public List<Transaction> getActiveRentalsByUser(String userId) {
+        List<Transaction> activeRentals = new ArrayList<>();
+        for (Transaction transaction : transactions) {
+            if (transaction.getUserId().equals(userId) && transaction.isActive()) {
+                activeRentals.add(transaction);
+            }
+        }
+        return activeRentals;
+    }
+
+    // Get canceled rentals by user ID
+    public List<Transaction> getCanceledRentalsByUser(String userId) {
+        List<Transaction> canceledRentals = new ArrayList<>();
+        for (Transaction transaction : transactions) {
+            if (transaction.getUserId().equals(userId) && transaction.isCanceled()) {
+                canceledRentals.add(transaction);
+            }
+        }
+        return canceledRentals;
+    }
+
 
 }
