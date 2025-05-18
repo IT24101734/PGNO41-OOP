@@ -2,60 +2,24 @@ package com.movierental.model.movie;
 
 public class Movie {
 
-    // Getters and setters (existing ones unchanged)
-    public String getMovieId() {
-        return movieId;
+    // New getter and setter for coverPhotoPath
+    public String getCoverPhotoPath() {
+        return coverPhotoPath;
     }
 
-    public void setMovieId(String movieId) {
-        this.movieId = movieId;
+    public void setCoverPhotoPath(String coverPhotoPath) {
+        this.coverPhotoPath = coverPhotoPath;
     }
 
-    public String getTitle() {
-        return title;
+    // Calculate rental price (to be overridden by subclasses)
+    public double calculateRentalPrice(int daysRented) {
+        return 3.99 * daysRented; // Base rental price
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    // Update toFileString to include cover photo path
+    public String toFileString() {
+        return "REGULAR," + movieId + "," + title + "," + director + "," +
+                genre + "," + releaseYear + "," + rating + "," + available + "," + coverPhotoPath;
 
-    public String getDirector() {
-        return director;
     }
-
-    public void setDirector(String director) {
-        this.director = director;
-    }
-
-    public String getGenre() {
-        return genre;
-    }
-
-    public void setGenre(String genre) {
-        this.genre = genre;
-    }
-
-    public int getReleaseYear() {
-        return releaseYear;
-    }
-
-    public void setReleaseYear(int releaseYear) {
-        this.releaseYear = releaseYear;
-    }
-
-    public double getRating() {
-        return rating;
-    }
-
-    public void setRating(double rating) {
-        this.rating = rating;
-    }
-
-    public boolean isAvailable() {
-        return available;
-    }
-
-    public void setAvailable(boolean available) {
-        this.available = available;
-    }
-
+}
