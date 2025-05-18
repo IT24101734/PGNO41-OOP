@@ -85,5 +85,20 @@ public class UserManager {
             }
             return false;
         }
+        public boolean upgradeToPremium(String userId) {
+            User user = getUserById(userId);
+            if (user != null && user instanceof RegularUser) {
+                PremiumUser premiumUser = new PremiumUser(
+                        user.getUserId(),
+                        user.getUsername(),
+                        user.getPassword(),
+                        user.getEmail(),
+                        user.getFullName()
+                );
+
+                return updateUser(premiumUser);
+            }
+            return false;
+
 
 
