@@ -267,5 +267,49 @@ public class RentalManager {
         return true;
     }
 
+    // Edit rental (update due date)
+    public boolean updateRentalDueDate(String transactionId, int newRentalDays) {
+        System.out.println("RentalManager: Starting update process for transaction: " + transactionId);
+
+        Transaction transaction = getTransactionById(transactionId);
+        if (transaction == null) {
+            System.out.println("RentalManager: Transaction not found");
+            return false;
+        }
+
+        if (transaction.isReturned() || transaction.isCanceled()) {
+            System.out.println("RentalManager: Cannot update a returned or canceled rental");
+            return false;
+        }
+
+        // Get user and movie to recalculate fee
+        User user = userManager.getUserById(transaction.getUserId());
+        Movie movie = movieManager.getMovieById(transaction.getMovieId());
+
+        if (user == null || movie == null) {
+            System.out.println("RentalManager: User or movie not found");
+            return false;
+        }
+
+        // Calculate new due date
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(transaction.getRentalDate()); // Start from original rental date
+        calendar.add(Calendar.DAY_OF_MONTH, newRentalDays);
+        Date newDueDate = calendar.getTime();
+
+        // Calculate new rental fee
+        double newRentalFee = calculateRentalFee(user, movie, newRentalDays);
+
+        // Update transaction
+        transaction.setDueDate(newDueDate);
+        transaction.setRentalFee(newRentalFee);
+
+        // Save updated transaction
+        saveTransactions();
+        System.out.println("RentalManager: Rental update completed successfully");
+
+        return true;
+    }
+
 
 }
