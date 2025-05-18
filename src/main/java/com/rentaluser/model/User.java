@@ -61,5 +61,37 @@ public class User {
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
+    public boolean authenticate(String inputPassword) {
+        return this.password.equals(inputPassword);
+    }
 
+    // Method to get rental limit (to be overridden by subclasses)
+    public int getRentalLimit() {
+        return 3; // Default rental limit
+    }
+
+    // Convert user to string representation for file storage
+    public String toFileString() {
+        return userId + "," + username + "," + password + "," + email + "," + fullName;
+    }
+
+    // Create user from string representation (from file)
+    public static User fromFileString(String fileString) {
+        String[] parts = fileString.split(",");
+        if (parts.length >= 5) {
+            return new User(parts[0], parts[1], parts[2], parts[3], parts[4]);
+        }
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId='" + userId + '\'' +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", fullName='" + fullName + '\'' +
+                '}';
+    }
 }
+
