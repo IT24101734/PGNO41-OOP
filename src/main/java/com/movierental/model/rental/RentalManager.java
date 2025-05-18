@@ -230,5 +230,42 @@ public class RentalManager {
         return true;
     }
 
+    // Cancel a rental
+    public boolean cancelRental(String transactionId, String reason) {
+        System.out.println("RentalManager: Starting cancellation process for transaction: " + transactionId);
+
+        Transaction transaction = getTransactionById(transactionId);
+        if (transaction == null) {
+            System.out.println("RentalManager: Transaction not found");
+            return false;
+        }
+
+        if (transaction.isReturned() || transaction.isCanceled()) {
+            System.out.println("RentalManager: Movie already returned or rental canceled");
+            return false;
+        }
+
+        // Update transaction status
+        transaction.setCanceled(true);
+        transaction.setCancellationDate(new Date());
+        transaction.setCancellationReason(reason);
+
+        // Update movie availability
+        Movie movie = movieManager.getMovieById(transaction.getMovieId());
+        if (movie != null) {
+            movie.setAvailable(true);
+            movieManager.updateMovie(movie);
+            System.out.println("RentalManager: Updated movie availability after cancellation");
+        } else {
+            System.out.println("RentalManager: Warning - Movie not found when canceling rental");
+        }
+
+        // Save updated transaction
+        saveTransactions();
+        System.out.println("RentalManager: Cancellation process completed successfully");
+
+        return true;
+    }
+
 
 }
