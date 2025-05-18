@@ -15,6 +15,7 @@ public class User {
         this.fullName = fullName;
     }
 
+    // Default constructor
     public User() {
         this.userId = "";
         this.username = "";
