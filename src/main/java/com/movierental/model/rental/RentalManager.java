@@ -417,4 +417,85 @@ public class RentalManager {
         }
         return overdueRentals;
     }
+
+    // Get rental history for a movie
+    public List<Transaction> getRentalHistoryForMovie(String movieId) {
+        List<Transaction> movieRentals = new ArrayList<>();
+        for (Transaction transaction : transactions) {
+            if (transaction.getMovieId().equals(movieId)) {
+                movieRentals.add(transaction);
+            }
+        }
+        return movieRentals;
+    }
+
+    // Delete a transaction
+    public boolean deleteTransaction(String transactionId) {
+        for (int i = 0; i < transactions.size(); i++) {
+            if (transactions.get(i).getTransactionId().equals(transactionId)) {
+                // If the transaction is for a movie that hasn't been returned or canceled,
+                // make the movie available again
+                Transaction transaction = transactions.get(i);
+                if (transaction.isActive()) {
+                    Movie movie = movieManager.getMovieById(transaction.getMovieId());
+                    if (movie != null) {
+                        movie.setAvailable(true);
+                        movieManager.updateMovie(movie);
+                    }
+                }
+
+                transactions.remove(i);
+                saveTransactions();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Check if a user has a specific movie rented
+    public boolean hasUserRentedMovie(String userId, String movieId) {
+        for (Transaction transaction : transactions) {
+            if (transaction.getUserId().equals(userId) &&
+                    transaction.getMovieId().equals(movieId) &&
+                    transaction.isActive()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Get total rental fees for a given user
+    public double getTotalRentalFeesByUser(String userId) {
+        double total = 0.0;
+        for (Transaction transaction : transactions) {
+            if (transaction.getUserId().equals(userId) && !transaction.isCanceled()) {
+                total += transaction.getRentalFee();
+                total += transaction.getLateFee();
+            }
+        }
+        return total;
+    }
+
+    // Set ServletContext (can be used to update the context after initialization)
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
+        initializeFilePath();
+
+        // Update managers with the new ServletContext
+        if (this.movieManager != null) {
+            this.movieManager.setServletContext(servletContext);
+        } else {
+            this.movieManager = new MovieManager(servletContext);
+        }
+
+        if (this.userManager != null) {
+            this.userManager.setServletContext(servletContext);
+        } else {
+            this.userManager = new UserManager(servletContext);
+        }
+
+        // Reload transactions with the new file path
+        transactions.clear();
+        loadTransactions();
+    }
 }
