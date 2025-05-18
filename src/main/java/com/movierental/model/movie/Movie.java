@@ -1,13 +1,17 @@
 package com.movierental.model.movie;
 
 public class Movie {
-
-    private String movieId;
-    private String title;
-    private String director;
-    private String genre;
-    private int releaseYear;
-    private double rating;
-    private boolean available;
-    private String coverPhotoPath;
+    // Default constructor
+    public Movie() {
+        this.movieId = "";
+        this.title = "";
+        this.director = "";
+        this.genre = "";
+        this.releaseYear = 0;
+        this.rating = 0.0;
+        this.available = true;
+        this.coverPhotoPath = "";
+    }
 }
+
+
