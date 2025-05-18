@@ -76,5 +76,14 @@ public class UserManager {
                 return false;
             }
         }
+        public boolean updateUser(User updatedUser) {
+            for (int i = 0; i < users.size(); i++) {
+                if (users.get(i).getUserId().equals(updatedUser.getUserId())) {
+                    users.set(i, updatedUser);
+                    return saveUsers();
+                }
+            }
+            return false;
+        }
 
 
