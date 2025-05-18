@@ -390,5 +390,31 @@ public class RentalManager {
         return canceledRentals;
     }
 
+    // Get overdue rentals
+    public List<Transaction> getOverdueRentals() {
+        List<Transaction> overdueRentals = new ArrayList<>();
+        Date currentDate = new Date();
 
+        for (Transaction transaction : transactions) {
+            if (transaction.isActive() && currentDate.after(transaction.getDueDate())) {
+                overdueRentals.add(transaction);
+            }
+        }
+        return overdueRentals;
+    }
+
+    // Get overdue rentals by user
+    public List<Transaction> getOverdueRentalsByUser(String userId) {
+        List<Transaction> overdueRentals = new ArrayList<>();
+        Date currentDate = new Date();
+
+        for (Transaction transaction : transactions) {
+            if (transaction.getUserId().equals(userId) &&
+                    transaction.isActive() &&
+                    currentDate.after(transaction.getDueDate())) {
+                overdueRentals.add(transaction);
+            }
+        }
+        return overdueRentals;
+    }
 }
