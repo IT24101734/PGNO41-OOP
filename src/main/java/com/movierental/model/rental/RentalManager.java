@@ -1,11 +1,10 @@
 package com.movierental.model.rental;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class RentalManager {
-    public class RentalManager {
+
         private static final String RENTAL_FILE_NAME = "rentals.txt";
         private List<Transaction> transactions;
         private MovieManager movieManager;
@@ -110,5 +109,78 @@ public class RentalManager {
             }
         }
 
+    // Rent a movie
+    public Transaction rentMovie(String userId, String movieId, int rentalDays) {
+        System.out.println("RentalManager: Starting rental process...");
+        System.out.println("RentalManager: User ID: " + userId);
+        System.out.println("RentalManager: Movie ID: " + movieId);
+        System.out.println("RentalManager: Rental Days: " + rentalDays);
+
+        // Check if user exists
+        User user = userManager.getUserById(userId);
+        if (user == null) {
+            System.out.println("RentalManager: User not found");
+            return null;
+        }
+        System.out.println("RentalManager: User found: " + user.getUsername());
+
+        // Check if movie exists and is available
+        Movie movie = movieManager.getMovieById(movieId);
+        if (movie == null) {
+            System.out.println("RentalManager: Movie not found");
+            return null;
+        }
+        System.out.println("RentalManager: Movie found: " + movie.getTitle());
+
+        if (!movie.isAvailable()) {
+            System.out.println("RentalManager: Movie is not available");
+            return null;
+        }
+        System.out.println("RentalManager: Movie is available");
+
+        // Check if user has reached rental limit
+        List<Transaction> userActiveRentals = getActiveRentalsByUser(userId);
+        System.out.println("RentalManager: User has " + userActiveRentals.size() + " active rentals");
+        System.out.println("RentalManager: User's rental limit is " + user.getRentalLimit());
+
+        if (userActiveRentals.size() >= user.getRentalLimit()) {
+            System.out.println("RentalManager: User has reached rental limit");
+            return null;
+        }
+
+        // Calculate rental fee based on user type and movie type
+        double rentalFee = calculateRentalFee(user, movie, rentalDays);
+        System.out.println("RentalManager: Calculated rental fee: " + rentalFee);
+
+        // Calculate due date
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, rentalDays);
+        Date dueDate = calendar.getTime();
+
+        // Create new transaction
+        Transaction transaction = new Transaction();
+        transaction.setTransactionId(UUID.randomUUID().toString());
+        transaction.setUserId(userId);
+        transaction.setMovieId(movieId);
+        transaction.setRentalDate(new Date());
+        transaction.setDueDate(dueDate);
+        transaction.setRentalFee(rentalFee);
+        transaction.setReturned(false);
+        transaction.setCanceled(false);
+
+        System.out.println("RentalManager: Created transaction with ID: " + transaction.getTransactionId());
+
+        // Update movie availability
+        movie.setAvailable(false);
+        boolean movieUpdated = movieManager.updateMovie(movie);
+        System.out.println("RentalManager: Updated movie availability: " + movieUpdated);
+
+        // Add transaction to list and save
+        transactions.add(transaction);
+        saveTransactions();
+        System.out.println("RentalManager: Rental transaction completed successfully");
+
+        return transaction;
+    }
 
     }
