@@ -299,6 +299,7 @@ public class RecommendationManager {
                 if (recommendationCount >= 15) {
                     break;  // Limit to 15 recommendations total
                 }
+
             }
 
             if (recommendationCount >= 15) {
