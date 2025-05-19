@@ -45,9 +45,55 @@ public class RecentlyWatched {
     }
     public String getMostRecentMovie() {
             if (movieIds.isEmpty()) {
-        return null;
+                  return null;
     }
         return movieIds.peek();
 }
+
+// Remove the most recently watched movie (pop operation)
+    public String removeRecentMovie() {
+         if (movieIds.isEmpty()) {
+            return null;
+    }
+        watchDates.pop();
+        return movieIds.pop();
+}
+
+    // Check if a movie is in the recently watched stack
+    public boolean contains(String movieId) {
+    return movieIds.contains(movieId);
+}
+
+    // Get the watch date for a specific movie
+    public Date getWatchDateForMovie(String movieId) {
+        int index = movieIds.indexOf(movieId);
+        if (index >= 0) {
+            return watchDates.get(index);
+    }
+            return null;
+}
+
+
+
+    // Get all movie IDs in the recently watched stack
+    public Stack<String> getMovieIds() {
+    return (Stack<String>) movieIds.clone();
+}
+
+    // Get all watch dates
+    public Stack<Date> getWatchDates() {
+    return (Stack<Date>) watchDates.clone();
+}
+
+    // Get the number of movies in the recently watched stack
+    public int size() {
+    return movieIds.size();
+}
+
+    // Clear the recently watched stack
+    public void clear() {
+        movieIds.clear();
+        watchDates.clear();
+    }
 
 
