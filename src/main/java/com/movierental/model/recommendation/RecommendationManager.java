@@ -208,6 +208,134 @@ public class RecommendationManager {
         saveRecommendations();
         return generalRecommendations;
     }
+    public List<PersonalRecommendation> generatePersonalRecommendations(String userId) {
+        // Remove existing personal recommendations for this user
+        recommendations.removeIf(rec -> rec.isPersonalized() && userId.equals(rec.getUserId()));
+
+        List<PersonalRecommendation> personalRecommendations = new ArrayList<>();
+
+        // Get user's watched movies, rentals, and watchlist
+        RecentlyWatched recentlyWatched = watchlistManager.getRecentlyWatched(userId);
+        List<Transaction> rentalHistory = rentalManager.getTransactionsByUser(userId);
+        List<Watchlist> watchlist = watchlistManager.getWatchlistByUser(userId);
+
+        // Get movies the user has already seen or in their watchlist
+        Set<String> userMovieIds = new HashSet<>();
+        if (recentlyWatched != null) {
+            userMovieIds.addAll(recentlyWatched.getMovieIds());
+        }
+
+        for (Transaction transaction : rentalHistory) {
+            userMovieIds.add(transaction.getMovieId());
+        }
+
+        for (Watchlist item : watchlist) {
+            userMovieIds.add(item.getMovieId());
+        }
+
+        // Get user's preferred genres based on watched movies and watchlist
+        Map<String, Integer> genreCounts = new HashMap<>();
+        for (String movieId : userMovieIds) {
+            Movie movie = movieManager.getMovieById(movieId);
+            if (movie != null) {
+                String genre = movie.getGenre();
+                genreCounts.put(genre, genreCounts.getOrDefault(genre, 0) + 1);
+            }
+        }
+
+        // Sort genres by preference (most watched first)
+        List<Map.Entry<String, Integer>> sortedGenres = new ArrayList<>(genreCounts.entrySet());
+        Collections.sort(sortedGenres, (g1, g2) -> g2.getValue().compareTo(g1.getValue()));
+
+        // Recommend movies based on preferred genres
+        int recommendationCount = 0;
+        for (Map.Entry<String, Integer> genreEntry : sortedGenres) {
+            String genre = genreEntry.getKey();
+
+            // Get movies of this genre not seen by the user
+            List<Movie> genreMovies = new ArrayList<>();
+            for (Movie movie : movieManager.getAllMovies()) {
+                if (movie.getGenre().equals(genre) && !userMovieIds.contains(movie.getMovieId()) && movie.isAvailable()) {
+                    genreMovies.add(movie);
+                }
+            }
+
+            // Sort by rating using bubble sort
+            for (int i = 0; i < genreMovies.size() - 1; i++) {
+                for (int j = 0; j < genreMovies.size() - i - 1; j++) {
+                    if (genreMovies.get(j).getRating() < genreMovies.get(j + 1).getRating()) {
+                        // Swap movies
+                        Movie temp = genreMovies.get(j);
+                        genreMovies.set(j, genreMovies.get(j + 1));
+                        genreMovies.set(j + 1, temp);
+                    }
+                }
+            }
+
+            // Take top movies per genre
+            for (int i = 0; i < Math.min(5, genreMovies.size()); i++) {
+                Movie movie = genreMovies.get(i);
+
+                // Calculate relevance score based on genre preference and movie rating
+                double genreWeight = (double) genreEntry.getValue() /
+                        Collections.max(genreCounts.values()); // Normalized to 0-1
+                double ratingWeight = movie.getRating() / 10.0; // Normalized to 0-1
+                double relevanceScore = 0.7 * genreWeight + 0.3 * ratingWeight; // Weighted average
+
+                PersonalRecommendation recommendation = new PersonalRecommendation();
+                recommendation.setRecommendationId(UUID.randomUUID().toString());
+                recommendation.setMovieId(movie.getMovieId());
+                recommendation.setUserId(userId);
+                recommendation.setGeneratedDate(new Date());
+                recommendation.setScore(movie.getRating());
+                recommendation.setReason("Based on your interest in " + genre + " movies");
+                recommendation.setBaseSource("genre-preference");
+                recommendation.setRelevanceScore(relevanceScore);
+
+                personalRecommendations.add(recommendation);
+                recommendations.add(recommendation);
+
+                recommendationCount++;
+                if (recommendationCount >= 15) {
+                    break;  // Limit to 15 recommendations total
+                }
+            }
+
+            if (recommendationCount >= 15) {
+                break;
+            }
+        }
+
+        // If we don't have enough recommendations, add some based on top-rated movies
+        if (recommendationCount < 15) {
+            List<Movie> topRatedMovies = movieManager.getTopRatedMovies(30);
+
+            for (Movie movie : topRatedMovies) {
+                if (!userMovieIds.contains(movie.getMovieId()) && movie.isAvailable()) {
+                    PersonalRecommendation recommendation = new PersonalRecommendation();
+                    recommendation.setRecommendationId(UUID.randomUUID().toString());
+                    recommendation.setMovieId(movie.getMovieId());
+                    recommendation.setUserId(userId);
+                    recommendation.setGeneratedDate(new Date());
+                    recommendation.setScore(movie.getRating());
+                    recommendation.setReason("This is one of our highest-rated movies");
+                    recommendation.setBaseSource("top-rated");
+                    recommendation.setRelevanceScore(0.6); // Slightly lower relevance as not based on preferences
+
+                    personalRecommendations.add(recommendation);
+                    recommendations.add(recommendation);
+
+                    recommendationCount++;
+                    if (recommendationCount >= 15) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        saveRecommendations();
+        return personalRecommendations;
+    }
 
 
 
