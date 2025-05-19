@@ -511,7 +511,10 @@ public class RecommendationManager {
             genres.add(movie.getGenre());
         }
         return new ArrayList<>(genres);
+    }public List<Recommendation> getAllRecommendations() {
+        return new ArrayList<>(recommendations);
     }
+
 
 
 
