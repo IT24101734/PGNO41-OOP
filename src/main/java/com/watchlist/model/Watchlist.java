@@ -153,3 +153,36 @@ package com.watchlist.model;
         // Create Watchlist from string representation (from file)
         public static Watchlist fromFileString(String fileString) {
             String[] parts = fileString.split(",", 8); // Limit to 8 parts as notes may contain commas
+
+
+
+            if (parts.length >= 7) {
+                Watchlist watchlist = new Watchlist();
+                watchlist.setWatchlistId(parts[0]);
+                watchlist.setUserId(parts[1]);
+                watchlist.setMovieId(parts[2]);
+                watchlist.setAddedDate(new Date(Long.parseLong(parts[3])));
+                watchlist.setWatched(Boolean.parseBoolean(parts[4]));
+
+                long watchedDateLong = Long.parseLong(parts[5]);
+                if (watchedDateLong > 0) {
+                    watchlist.setWatchedDate(new Date(watchedDateLong));
+                } else {
+                    watchlist.setWatchedDate(null);
+                }
+
+                watchlist.setPriority(Integer.parseInt(parts[6]));
+
+                if (parts.length > 7) {
+                    watchlist.setNotes(parts[7].replace("\\,", ","));
+                } else {
+                    watchlist.setNotes("");
+                }
+
+                return watchlist;
+            }
+
+            return null;
+        }
+    }
+
