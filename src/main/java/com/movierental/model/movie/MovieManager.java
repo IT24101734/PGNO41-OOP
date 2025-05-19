@@ -1,50 +1,37 @@
 package com.movierental.model.movie;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
+import java.io.InputStream;
+import java.util.UUID;
 
-private void loadMovies() {
-    File file = new File(dataFilePath);
+public class MovieManager {
 
-    // Create directory if it doesn't exist
-    if (file.getParentFile() != null) {
-        file.getParentFile().mkdirs();
-    }
-
-    if (!file.exists()) {
-        try {
-            file.createNewFile();
-        } catch (IOException e) {
-            System.err.println("Error creating movies file: " + e.getMessage());
+    public boolean addMovie(Movie movie, InputStream coverPhotoStream, String originalFileName) {
+        // Generate a unique ID if not provided
+        if (movie.getMovieId() == null || movie.getMovieId().isEmpty()) {
+            movie.setMovieId(UUID.randomUUID().toString());
         }
-        return;
-    }
 
-    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-        String line;
-        while ((line = reader.readLine()) != null) {
-            if (line.trim().isEmpty()) {
-                continue;
-            }
+        // Save the cover photo if provided
+        if (coverPhotoStream != null) {
+            String fileExtension = getFileExtension(originalFileName);
+            String photoFileName = movie.getMovieId() + fileExtension;
+            String photoPath = imagesDirectoryPath + File.separator + photoFileName;
 
-            Movie movie = null;
-            if (line.startsWith("NEW_RELEASE,")) {
-                movie = NewRelease.fromFileString(line);
-            } else if (line.startsWith("CLASSIC,")) {
-                movie = ClassicMovie.fromFileString(line);
-            } else if (line.startsWith("REGULAR,")) {
-                movie = Movie.fromFileString(line);
-            }
-
-            if (movie != null) {
-                movies.add(movie);
+            try {
+                savePhoto(coverPhotoStream, photoPath);
+                movie.setCoverPhotoPath(MOVIE_IMAGES_DIR + "/" + photoFileName);
+            } catch (IOException e) {
+                System.err.println("Error saving cover photo: " + e.getMessage());
+                // Continue adding the movie even if photo upload fails
             }
         }
-    } catch (IOException e) {
-        System.err.println("Error loading movies: " + e.getMessage());
-    }
+
+
+
+
+
+
+
 }
-
