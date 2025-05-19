@@ -23,3 +23,17 @@ public class RecentlyWatched {
     }
 }
 
+    public void addMovie(String movieId) {
+    // Remove existing entry if it exists
+        int existingIndex = movieIds.indexOf(movieId);
+        if (existingIndex != -1) {
+        // Remove the existing movie and its date
+        movieIds.removeElementAt(existingIndex);
+        watchDates.removeElementAt(existingIndex);
+    }
+
+    // Push new movie to the top of the stack
+        movieIds.push(movieId);
+        watchDates.push(new Date());
+
+
