@@ -336,6 +336,23 @@ public class RecommendationManager {
         saveRecommendations();
         return personalRecommendations;
     }
+    public List<PersonalRecommendation> getPersonalRecommendations(String userId) {
+        List<PersonalRecommendation> userRecs = new ArrayList<>();
+
+        for (Recommendation rec : recommendations) {
+            if (rec.isPersonalized() && userId.equals(rec.getUserId())) {
+                userRecs.add((PersonalRecommendation) rec);
+            }
+        }
+
+        // Check if we need to generate new recommendations
+        if (userRecs.isEmpty() || isRecommendationsStale(userRecs)) {
+            userRecs = generatePersonalRecommendations(userId);
+        }
+
+        return userRecs;
+    }
+
 
 
 
