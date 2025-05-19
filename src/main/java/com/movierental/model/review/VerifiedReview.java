@@ -24,4 +24,10 @@ import java.util.Date;
         this.watchDate = new Date();
     }
 
+    public String toString() {
+        String var10000 = this.getReviewId();
+        return "VerifiedReview{reviewId='" + var10000 + "', movieId='" + this.getMovieId() + "', userId='" + this.getUserId() + "', userName='" + this.getUserName() + "', comment='" + this.getComment() + "', rating=" + this.getRating() + ", reviewDate=" + String.valueOf(this.getReviewDate()) + ", transactionId='" + this.transactionId + "', watchDate=" + String.valueOf(this.watchDate) + "}";
+    }
+}
+
 
