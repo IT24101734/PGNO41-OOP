@@ -57,6 +57,38 @@ public class PersonalRecommendation extends Recommendation {
                 super.getScore() + "," + super.getReason().replace(",", "\\,") + "," +
                 baseSource + "," + relevanceScore;
     }
+    public static PersonalRecommendation fromFileString(String fileString) {
+        String[] parts = fileString.split(",(?=([^\\\\]|\\\\[^,])*$)"); // Split by comma, accounting for escaped commas
+
+        if (parts.length >= 9 && parts[0].equals("PERSONAL_RECOMMENDATION")) {
+            PersonalRecommendation recommendation = new PersonalRecommendation();
+            recommendation.setRecommendationId(parts[1]);
+            recommendation.setMovieId(parts[2]);
+            recommendation.setUserId("null".equals(parts[3]) ? null : parts[3]);
+            recommendation.setGeneratedDate(new Date(Long.parseLong(parts[4])));
+            recommendation.setScore(Double.parseDouble(parts[5]));
+            recommendation.setReason(parts[6].replace("\\,", ","));
+            recommendation.setBaseSource(parts[7]);
+            recommendation.setRelevanceScore(Double.parseDouble(parts[8]));
+            return recommendation;
+        }
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return "PersonalRecommendation{" +
+                "recommendationId='" + getRecommendationId() + '\'' +
+                ", movieId='" + getMovieId() + '\'' +
+                ", userId='" + getUserId() + '\'' +
+                ", generatedDate=" + getGeneratedDate() +
+                ", score=" + getScore() +
+                ", reason='" + getReason() + '\'' +
+                ", baseSource='" + baseSource + '\'' +
+                ", relevanceScore=" + relevanceScore +
+                '}';
+    }
+}
 
 
 }
