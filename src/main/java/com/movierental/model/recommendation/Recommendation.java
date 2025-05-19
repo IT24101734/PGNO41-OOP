@@ -31,5 +31,52 @@ public class Recommendation {
             this.generatedDate = new Date();
             this.score = 0.0;
             this.reason = "";
+        } public String getRecommendationId() {
+            return recommendationId;
         }
-}
+
+        public void setRecommendationId(String recommendationId) {
+            this.recommendationId = recommendationId;
+        }
+
+        public String getMovieId() {
+            return movieId;
+        }
+
+        public void setMovieId(String movieId) {
+            this.movieId = movieId;
+        }
+
+        public String getUserId() {
+            return userId;
+        }
+
+        public void setUserId(String userId) {
+            this.userId = userId;
+        }
+
+        public Date getGeneratedDate() {
+            return generatedDate;
+        }
+
+        public void setGeneratedDate(Date generatedDate) {
+            this.generatedDate = generatedDate;
+        }
+
+        public double getScore() {
+            return score;
+        }
+
+        public void setScore(double score) {
+            this.score = score;
+        }
+
+        public String getReason() {
+            return reason;
+        }
+
+        public void setReason(String reason) {
+            this.reason = reason;
+        }
+
+    }
