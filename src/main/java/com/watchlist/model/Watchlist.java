@@ -24,3 +24,27 @@ package com.watchlist.model;
             this.priority = priority;
             this.notes = notes;
         }
+
+        // Constructor for adding a new unwatched movie
+        public Watchlist(String watchlistId, String userId, String movieId, int priority, String notes) {
+            this.watchlistId = watchlistId;
+            this.userId = userId;
+            this.movieId = movieId;
+            this.addedDate = new Date();
+            this.watched = false;
+            this.watchedDate = null;
+            this.priority = priority;
+            this.notes = notes;
+        }
+
+        // Default constructor
+        public Watchlist() {
+            this.watchlistId = "";
+            this.userId = "";
+            this.movieId = "";
+            this.addedDate = new Date();
+            this.watched = false;
+            this.watchedDate = null;
+            this.priority = 3;  // default medium priority
+            this.notes = "";
+        }
