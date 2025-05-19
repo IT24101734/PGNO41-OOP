@@ -204,3 +204,32 @@ public class WatchlistManager {
                 System.out.println("Movie not found: " + movieId);
                 return null; // Movie doesn't exist
             }
+
+
+            // Check if already in watchlist
+            for (Watchlist existingWatchlist : watchlists) {
+                if (existingWatchlist.getUserId().equals(userId) &&
+                        existingWatchlist.getMovieId().equals(movieId)) {
+                    System.out.println("Movie already in watchlist");
+                    return existingWatchlist; // Already in watchlist
+                }
+            }
+
+            // Create a new watchlist entry
+            Watchlist watchlist = new Watchlist();
+            watchlist.setWatchlistId(UUID.randomUUID().toString());
+            watchlist.setUserId(userId);
+            watchlist.setMovieId(movieId);
+            watchlist.setAddedDate(new Date());
+            watchlist.setWatched(false);
+            watchlist.setWatchedDate(null);
+            watchlist.setPriority(priority);
+            watchlist.setNotes(notes);
+
+            // Add to list and save
+            watchlists.add(watchlist);
+            saveWatchlists();
+
+            System.out.println("Added to watchlist successfully");
+            return watchlist;
+        }
