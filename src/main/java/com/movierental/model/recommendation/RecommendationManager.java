@@ -1,7 +1,9 @@
 package com.movierental.model.recommendation;
 
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 
 public class RecommendationManager {
@@ -71,6 +73,52 @@ public class RecommendationManager {
             e.printStackTrace();
         }
     }
+    private void loadRecommendations() {
+        File file = new File(dataFilePath);
+
+        if (!file.exists()) {
+            try {
+                // Create parent directories if they don't exist
+                if (file.getParentFile() != null) {
+                    file.getParentFile().mkdirs();
+                }
+                file.createNewFile();
+                System.out.println("Created new recommendations file: " + dataFilePath);
+            } catch (IOException e) {
+                System.err.println("Error creating recommendations file: " + e.getMessage());
+                e.printStackTrace();
+            }
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+
+                Recommendation recommendation = null;
+                if (line.startsWith("PERSONAL_RECOMMENDATION,")) {
+                    recommendation = PersonalRecommendation.fromFileString(line);
+                } else if (line.startsWith("GENERAL_RECOMMENDATION,")) {
+                    recommendation = GeneralRecommendation.fromFileString(line);
+                } else if (line.startsWith("RECOMMENDATION,")) {
+                    recommendation = Recommendation.fromFileString(line);
+                }
+
+                if (recommendation != null) {
+                    recommendations.add(recommendation);
+                }
+            }
+            System.out.println("Loaded " + recommendations.size() + " recommendations from " + dataFilePath);
+        } catch (IOException e) {
+            System.err.println("Error loading recommendations: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
 
 
 }
