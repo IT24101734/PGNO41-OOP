@@ -437,6 +437,25 @@ public class RecommendationManager {
 
         return false;
     }
+    public boolean addRecommendation(Recommendation recommendation) {
+        if (recommendation == null || recommendation.getRecommendationId() == null) {
+            return false;
+        }
+
+        // Generate ID if not provided
+        if (recommendation.getRecommendationId().isEmpty()) {
+            recommendation.setRecommendationId(UUID.randomUUID().toString());
+        }
+
+        // Set generation date if not set
+        if (recommendation.getGeneratedDate() == null) {
+            recommendation.setGeneratedDate(new Date());
+        }
+
+        recommendations.add(recommendation);
+        saveRecommendations();
+        return true;
+    }
 
 
 
