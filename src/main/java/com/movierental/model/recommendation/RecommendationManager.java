@@ -483,6 +483,18 @@ public class RecommendationManager {
         }
 
         return false;
+    }public Recommendation getRecommendationById(String recommendationId) {
+        if (recommendationId == null) {
+            return null;
+        }
+
+        for (Recommendation rec : recommendations) {
+            if (rec.getRecommendationId().equals(recommendationId)) {
+                return rec;
+            }
+        }
+
+        return null;
     }
 
 
