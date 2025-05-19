@@ -469,6 +469,20 @@ public class RecommendationManager {
         }
 
         return false;
+    }public boolean deleteRecommendation(String recommendationId) {
+        if (recommendationId == null) {
+            return false;
+        }
+
+        for (int i = 0; i < recommendations.size(); i++) {
+            if (recommendations.get(i).getRecommendationId().equals(recommendationId)) {
+                recommendations.remove(i);
+                saveRecommendations();
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
