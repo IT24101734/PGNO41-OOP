@@ -28,5 +28,25 @@ public class GeneralRecommendation extends Recommendation {
             this.category = "";
             this.rank = 0;
         }
-
+    public String getCategory() {
+        return category;
     }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public int getRank() {
+        return rank;
+    }
+
+    public void setRank(int rank) {
+        this.rank = rank;
+    }
+
+    @Override
+    public boolean isPersonalized() {
+        return false;
+    }
+
+}
