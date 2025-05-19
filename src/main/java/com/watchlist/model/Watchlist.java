@@ -129,3 +129,10 @@ package com.watchlist.model;
         public void setNotes(String notes) {
             this.notes = notes;
         }
+
+
+        // Mark movie as watched
+        public void markAsWatched() {
+            this.watched = true;
+            this.watchedDate = new Date();
+        }
