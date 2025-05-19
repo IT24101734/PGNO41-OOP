@@ -351,6 +351,21 @@ public class RecommendationManager {
         }
 
         return userRecs;
+    }public List<GeneralRecommendation> getGeneralRecommendations() {
+        List<GeneralRecommendation> generalRecs = new ArrayList<>();
+
+        for (Recommendation rec : recommendations) {
+            if (!rec.isPersonalized()) {
+                generalRecs.add((GeneralRecommendation) rec);
+            }
+        }
+
+        // Check if we need to generate new recommendations
+        if (generalRecs.isEmpty() || isRecommendationsStale(generalRecs)) {
+            generalRecs = generateGeneralRecommendations();
+        }
+
+        return generalRecs;
     }
 
 
