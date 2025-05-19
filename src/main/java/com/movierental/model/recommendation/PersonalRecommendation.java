@@ -50,6 +50,13 @@ public class PersonalRecommendation extends Recommendation {
         return true;
     }
 
+    @Override
+    public String toFileString() {
+        return "PERSONAL_RECOMMENDATION," + super.getRecommendationId() + "," + super.getMovieId() + "," +
+                super.getUserId() + "," + super.getGeneratedDate().getTime() + "," +
+                super.getScore() + "," + super.getReason().replace(",", "\\,") + "," +
+                baseSource + "," + relevanceScore;
+    }
 
 
 }
