@@ -1,34 +1,38 @@
 package com.movierental.model.movie;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.UUID;
+public class MovieManager{
 
-public class MovieManager {
 
-    public boolean addMovie(Movie movie, InputStream coverPhotoStream, String originalFileName) {
-        // Generate a unique ID if not provided
-        if (movie.getMovieId() == null || movie.getMovieId().isEmpty()) {
-            movie.setMovieId(UUID.randomUUID().toString());
-        }
+public boolean updateMovie(Movie updatedMovie, InputStream coverPhotoStream, String originalFileName) {
+    for (int i = 0; i < movies.size(); i++) {
+        if (movies.get(i).getMovieId().equals(updatedMovie.getMovieId())) {
+            // If a new cover photo is provided, save it and update the path
+            if (coverPhotoStream != null) {
+                String fileExtension = getFileExtension(originalFileName);
+                String photoFileName = updatedMovie.getMovieId() + fileExtension;
+                String photoPath = imagesDirectoryPath + File.separator + photoFileName;
 
-        // Save the cover photo if provided
-        if (coverPhotoStream != null) {
-            String fileExtension = getFileExtension(originalFileName);
-            String photoFileName = movie.getMovieId() + fileExtension;
-            String photoPath = imagesDirectoryPath + File.separator + photoFileName;
-
-            try {
-                savePhoto(coverPhotoStream, photoPath);
-                movie.setCoverPhotoPath(MOVIE_IMAGES_DIR + "/" + photoFileName);
-            } catch (IOException e) {
-                System.err.println("Error saving cover photo: " + e.getMessage());
-                // Continue adding the movie even if photo upload fails
+                try {
+                    savePhoto(coverPhotoStream, photoPath);
+                    updatedMovie.setCoverPhotoPath(MOVIE_IMAGES_DIR + "/" + photoFileName);
+                } catch (IOException e) {
+                    System.err.println("Error updating cover photo: " + e.getMessage());
+                    // Continue updating the movie even if photo update fails
+                    // Keep the old photo path
+                    updatedMovie.setCoverPhotoPath(movies.get(i).getCoverPhotoPath());
+                }
+            } else {
+                // No new photo provided, keep the old one
+                updatedMovie.setCoverPhotoPath(movies.get(i).getCoverPhotoPath());
             }
+
+            movies.set(i, updatedMovie);
+            saveMovies();
+            return true;
         }
-
-
+    }
+    return false;
+}
 
 
 
