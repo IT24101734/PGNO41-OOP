@@ -43,3 +43,11 @@ public class RecentlyWatched {
             watchDates.removeElementAt(0);
         }
     }
+    public String getMostRecentMovie() {
+            if (movieIds.isEmpty()) {
+        return null;
+    }
+        return movieIds.peek();
+}
+
+
