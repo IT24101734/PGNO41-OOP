@@ -505,6 +505,12 @@ public class RecommendationManager {
             saveRecommendations();
         }
         return removed;
+    }public List<String> getAllGenres() {
+        Set<String> genres = new HashSet<>();
+        for (Movie movie : movieManager.getAllMovies()) {
+            genres.add(movie.getGenre());
+        }
+        return new ArrayList<>(genres);
     }
 
 
