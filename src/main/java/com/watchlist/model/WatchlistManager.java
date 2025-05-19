@@ -408,3 +408,38 @@ public class WatchlistManager {
             });
             return sorted;
         }
+
+        // Sort watchlists by date added
+        public List<Watchlist> sortByDateAdded(List<Watchlist> watchlistToSort, boolean ascending) {
+            List<Watchlist> sorted = new ArrayList<>(watchlistToSort);
+            Collections.sort(sorted, new Comparator<Watchlist>() {
+                @Override
+                public int compare(Watchlist w1, Watchlist w2) {
+                    return ascending ?
+                            w1.getAddedDate().compareTo(w2.getAddedDate()) :
+                            w2.getAddedDate().compareTo(w1.getAddedDate());
+                }
+            });
+            return sorted;
+        }
+
+        // Get total watchlist count for a user
+        public int getWatchlistCount(String userId) {
+            int count = 0;
+            for (Watchlist watchlist : watchlists) {
+                if (watchlist.getUserId().equals(userId)) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        // Get unwatched count for a user
+        public int getUnwatchedCount(String userId) {
+            int count = 0;
+            for (Watchlist watchlist : watchlists) {
+                if (watchlist.getUserId().equals(userId) && !watchlist.isWatched()) {
+                    count++;
+                }
+            }
+            return count;
