@@ -96,4 +96,17 @@ public class RecentlyWatched {
         watchDates.clear();
     }
 
+// Convert to string representation for file storage
+    public String toFileString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("userId").append(",").append(maxSize);
+
+        for (int i = 0; i < movieIds.size(); i++) {
+            sb.append(",").append(movieIds.get(i))
+                .append(",").append(watchDates.get(i).getTime());
+    }
+
+        return sb.toString();
+}
+
 
