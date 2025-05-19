@@ -63,3 +63,40 @@ public class WatchlistManager {
         // Load watchlists from file
         private void loadWatchlists() {
             File file = new File(watchlistFilePath);
+
+
+
+            // Create directory if it doesn't exist
+            if (file.getParentFile() != null && !file.getParentFile().exists()) {
+                file.getParentFile().mkdirs();
+            }
+
+            if (!file.exists()) {
+                try {
+                    file.createNewFile();
+                    System.out.println("Created new watchlists file: " + watchlistFilePath);
+                } catch (IOException e) {
+                    System.err.println("Error creating watchlists file: " + e.getMessage());
+                    e.printStackTrace();
+                }
+                return;
+            }
+
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (line.trim().isEmpty()) {
+                        continue;
+                    }
+
+                    Watchlist watchlist = Watchlist.fromFileString(line);
+                    if (watchlist != null) {
+                        watchlists.add(watchlist);
+                    }
+                }
+                System.out.println("Loaded " + watchlists.size() + " watchlist entries");
+            } catch (IOException e) {
+                System.err.println("Error loading watchlists: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
