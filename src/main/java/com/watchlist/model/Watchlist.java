@@ -136,3 +136,20 @@ package com.watchlist.model;
             this.watched = true;
             this.watchedDate = new Date();
         }
+
+
+        // Convert to a string representation for file storage
+        public String toFileString() {
+            return watchlistId + "," +
+                    userId + "," +
+                    movieId + "," +
+                    addedDate.getTime() + "," +
+                    watched + "," +
+                    (watchedDate != null ? watchedDate.getTime() : "0") + "," +
+                    priority + "," +
+                    (notes != null ? notes.replace(",", "\\,") : "");
+        }
+
+        // Create Watchlist from string representation (from file)
+        public static Watchlist fromFileString(String fileString) {
+            String[] parts = fileString.split(",", 8); // Limit to 8 parts as notes may contain commas
