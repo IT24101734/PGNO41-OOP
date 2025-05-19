@@ -162,3 +162,31 @@ public class WatchlistManager {
                 e.printStackTrace();
             }
         }
+
+        // Helper method to extract user ID from file line
+        private String extractUserIdFromLine(String line) {
+            String[] parts = line.split(",");
+            return parts.length > 0 ? parts[0] : null;
+        }
+
+        // Save recently watched to file
+        private void saveRecentlyWatched() {
+            try {
+                // Ensure parent directory exists
+                File file = new File(recentlyWatchedFilePath);
+                if (file.getParentFile() != null && !file.getParentFile().exists()) {
+                    file.getParentFile().mkdirs();
+                }
+
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(recentlyWatchedFilePath))) {
+                    for (RecentlyWatched recentlyWatched : recentlyWatchedMap.values()) {
+                        writer.write(recentlyWatched.toFileString());
+                        writer.newLine();
+                    }
+                }
+                System.out.println("Saved " + recentlyWatchedMap.size() + " recently watched entries");
+            } catch (IOException e) {
+                System.err.println("Error saving recently watched: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
