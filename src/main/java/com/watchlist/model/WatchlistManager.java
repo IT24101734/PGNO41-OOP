@@ -100,3 +100,65 @@ public class WatchlistManager {
                 e.printStackTrace();
             }
         }
+
+
+        // Save watchlists to file
+        private void saveWatchlists() {
+            try {
+                // Ensure parent directory exists
+                File file = new File(watchlistFilePath);
+                if (file.getParentFile() != null && !file.getParentFile().exists()) {
+                    file.getParentFile().mkdirs();
+                }
+
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(watchlistFilePath))) {
+                    for (Watchlist watchlist : watchlists) {
+                        writer.write(watchlist.toFileString());
+                        writer.newLine();
+                    }
+                }
+                System.out.println("Saved " + watchlists.size() + " watchlist entries to " + watchlistFilePath);
+            } catch (IOException e) {
+                System.err.println("Error saving watchlists: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+
+        // Load recently watched from file
+        private void loadRecentlyWatched() {
+            File file = new File(recentlyWatchedFilePath);
+
+            // Create directory if it doesn't exist
+            if (file.getParentFile() != null && !file.getParentFile().exists()) {
+                file.getParentFile().mkdirs();
+            }
+
+            if (!file.exists()) {
+                try {
+                    file.createNewFile();
+                    System.out.println("Created new recently watched file: " + recentlyWatchedFilePath);
+                } catch (IOException e) {
+                    System.err.println("Error creating recently watched file: " + e.getMessage());
+                    e.printStackTrace();
+                }
+                return;
+            }
+
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (line.trim().isEmpty()) {
+                        continue;
+                    }
+
+                    RecentlyWatched recentlyWatched = RecentlyWatched.fromFileString(line);
+                    if (recentlyWatched != null) {
+                        recentlyWatchedMap.put(extractUserIdFromLine(line), recentlyWatched);
+                    }
+                }
+                System.out.println("Loaded " + recentlyWatchedMap.size() + " recently watched entries");
+            } catch (IOException e) {
+                System.err.println("Error loading recently watched: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
