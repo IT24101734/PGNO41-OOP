@@ -37,3 +37,9 @@ public class RecentlyWatched {
         watchDates.push(new Date());
 
 
+        // Ensure stack doesn't exceed max size
+        while (movieIds.size() > maxSize) {
+            movieIds.removeElementAt(0);
+            watchDates.removeElementAt(0);
+        }
+    }
