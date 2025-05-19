@@ -1,7 +1,7 @@
 package com.movierental.model.recommendation;
 
 import java.util.Date;
-    public class GeneralRecommendation extends Recommendation {
+public class GeneralRecommendation extends Recommendation {
         private String category;      // Category of recommendation (e.g., "top-rated", "trending")
         private int rank;             // Ranking within the category
 
