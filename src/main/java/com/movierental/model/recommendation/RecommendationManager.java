@@ -367,6 +367,33 @@ public class RecommendationManager {
 
         return generalRecs;
     }
+    public List<GeneralRecommendation> getTopRatedRecommendations() {
+        List<GeneralRecommendation> topRated = new ArrayList<>();
+
+        for (Recommendation rec : recommendations) {
+            if (!rec.isPersonalized() &&
+                    rec instanceof GeneralRecommendation &&
+                    "top-rated".equals(((GeneralRecommendation) rec).getCategory())) {
+                topRated.add((GeneralRecommendation) rec);
+            }
+        }
+
+        // Sort by rank
+        Collections.sort(topRated, new Comparator<GeneralRecommendation>() {
+            @Override
+            public int compare(GeneralRecommendation r1, GeneralRecommendation r2) {
+                return Integer.compare(r1.getRank(), r2.getRank());
+            }
+        });
+
+        // Generate if empty
+        if (topRated.isEmpty()) {
+            generateGeneralRecommendations();
+            return getTopRatedRecommendations();
+        }
+
+        return topRated;
+    }
 
 
 
