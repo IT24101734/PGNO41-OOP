@@ -512,12 +512,20 @@ public class RecommendationManager {
         }
         return new ArrayList<>(genres);
     }public List<Recommendation> getAllRecommendations() {
+
         return new ArrayList<>(recommendations);
+    }public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
+        initializeFilePath();
+        // Reload recommendations with the new file path
+        recommendations.clear();
+        loadRecommendations();
+
+        // Update other managers
+        movieManager.setServletContext(servletContext);
+        reviewManager.setServletContext(servletContext);
+        rentalManager.setServletContext(servletContext);
+        watchlistManager.setServletContext(servletContext);
     }
-
-
-
-
-
 
 }
