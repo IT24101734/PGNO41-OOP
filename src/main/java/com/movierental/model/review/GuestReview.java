@@ -23,4 +23,9 @@ public GuestReview() {
         this.emailAddress = "";
         this.ipAddress = "";
 }
+public String toString() {
+        String var10000 = this.getReviewId();
+        return "GuestReview{reviewId='" + var10000 + "', movieId='" + this.getMovieId() + "', userName='" + this.getUserName() + "', comment='" + this.getComment() + "', rating=" + this.getRating() + ", reviewDate=" + String.valueOf(this.getReviewDate()) + ", emailAddress='" + this.emailAddress + "', ipAddress='" + this.ipAddress + "'}";
+}
+
 
