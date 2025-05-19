@@ -48,3 +48,84 @@ package com.watchlist.model;
             this.priority = 3;  // default medium priority
             this.notes = "";
         }
+
+
+        // Getters and setters
+        public String getWatchlistId() {
+            return watchlistId;
+        }
+
+        public void setWatchlistId(String watchlistId) {
+            this.watchlistId = watchlistId;
+        }
+
+        public String getUserId() {
+            return userId;
+        }
+
+        public void setUserId(String userId) {
+            this.userId = userId;
+        }
+
+        public String getMovieId() {
+            return movieId;
+        }
+
+        public void setMovieId(String movieId) {
+            this.movieId = movieId;
+        }
+
+        public Date getAddedDate() {
+            return addedDate;
+        }
+
+        public void setAddedDate(Date addedDate) {
+            this.addedDate = addedDate;
+        }
+
+        public boolean isWatched() {
+            return watched;
+        }
+
+        public void setWatched(boolean watched) {
+            this.watched = watched;
+            // Update watched date if marked as watched
+            if (watched && this.watchedDate == null) {
+                this.watchedDate = new Date();
+            } else if (!watched) {
+                this.watchedDate = null;
+            }
+        }
+
+        public Date getWatchedDate() {
+            return watchedDate;
+        }
+
+        public void setWatchedDate(Date watchedDate) {
+            this.watchedDate = watchedDate;
+            // Update watched flag if date is set
+            this.watched = (watchedDate != null);
+        }
+
+        public int getPriority() {
+            return priority;
+        }
+
+        public void setPriority(int priority) {
+            // Ensure priority is within range
+            if (priority < 1) {
+                this.priority = 1;
+            } else if (priority > 5) {
+                this.priority = 5;
+            } else {
+                this.priority = priority;
+            }
+        }
+
+        public String getNotes() {
+            return notes;
+        }
+
+        public void setNotes(String notes) {
+            this.notes = notes;
+        }
