@@ -78,5 +78,44 @@ public class Recommendation {
         public void setReason(String reason) {
             this.reason = reason;
         }
+        public boolean isPersonalized() {
+            return false; // Base recommendation is not personalized
+        }
+
+        // Convert to file string for storage
+        public String toFileString() {
+            return "RECOMMENDATION," + recommendationId + "," + movieId + "," +
+                    (userId != null ? userId : "null") + "," + generatedDate.getTime() + "," +
+                    score + "," + reason.replace(",", "\\,");
+        }
+
+        // Create recommendation from file string
+        public static com.movierental.model.recommendation.Recommendation fromFileString(String fileString) {
+            String[] parts = fileString.split(",(?=([^\\\\]|\\\\[^,])*$)"); // Split by comma, accounting for escaped commas
+
+            if (parts.length >= 7 && parts[0].equals("RECOMMENDATION")) {
+                com.movierental.model.recommendation.Recommendation recommendation = new com.movierental.model.recommendation.Recommendation();
+                recommendation.setRecommendationId(parts[1]);
+                recommendation.setMovieId(parts[2]);
+                recommendation.setUserId("null".equals(parts[3]) ? null : parts[3]);
+                recommendation.setGeneratedDate(new Date(Long.parseLong(parts[4])));
+                recommendation.setScore(Double.parseDouble(parts[5]));
+                recommendation.setReason(parts[6].replace("\\,", ","));
+                return recommendation;
+            }
+            return null;
+        }
+
+        @Override
+        public String toString() {
+            return "Recommendation{" +
+                    "recommendationId='" + recommendationId + '\'' +
+                    ", movieId='" + movieId + '\'' +
+                    ", userId='" + userId + '\'' +
+                    ", generatedDate=" + generatedDate +
+                    ", score=" + score +
+                    ", reason='" + reason + '\'' +
+                    '}';
+        }
 
     }
