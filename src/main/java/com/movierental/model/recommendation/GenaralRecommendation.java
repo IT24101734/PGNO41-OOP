@@ -48,5 +48,11 @@ public class GeneralRecommendation extends Recommendation {
     public boolean isPersonalized() {
         return false;
     }
-
+    @Override
+    public String toFileString() {
+        return "GENERAL_RECOMMENDATION," + super.getRecommendationId() + "," + super.getMovieId() + "," +
+                "null," + super.getGeneratedDate().getTime() + "," +
+                super.getScore() + "," + super.getReason().replace(",", "\\,") + "," +
+                category + "," + rank;
+    }
 }
