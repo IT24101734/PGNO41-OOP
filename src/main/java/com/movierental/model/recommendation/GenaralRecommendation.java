@@ -55,4 +55,34 @@ public class GeneralRecommendation extends Recommendation {
                 super.getScore() + "," + super.getReason().replace(",", "\\,") + "," +
                 category + "," + rank;
     }
+    public static GeneralRecommendation fromFileString(String fileString) {
+        String[] parts = fileString.split(",(?=([^\\\\]|\\\\[^,])*$)"); // Split by comma, accounting for escaped commas
+
+        if (parts.length >= 9 && parts[0].equals("GENERAL_RECOMMENDATION")) {
+            GeneralRecommendation recommendation = new GeneralRecommendation();
+            recommendation.setRecommendationId(parts[1]);
+            recommendation.setMovieId(parts[2]);
+            // parts[3] should be "null" for general recommendations
+            recommendation.setGeneratedDate(new Date(Long.parseLong(parts[4])));
+            recommendation.setScore(Double.parseDouble(parts[5]));
+            recommendation.setReason(parts[6].replace("\\,", ","));
+            recommendation.setCategory(parts[7]);
+            recommendation.setRank(Integer.parseInt(parts[8]));
+            return recommendation;
+        }
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return "GeneralRecommendation{" +
+                "recommendationId='" + getRecommendationId() + '\'' +
+                ", movieId='" + getMovieId() + '\'' +
+                ", generatedDate=" + getGeneratedDate() +
+                ", score=" + getScore() +
+                ", reason='" + getReason() + '\'' +
+                ", category='" + category + '\'' +
+                ", rank=" + rank +
+                '}';
+    }
 }
