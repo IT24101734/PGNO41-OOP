@@ -29,5 +29,27 @@ public class PersonalRecommendation extends Recommendation {
         this.baseSource = "";
         this.relevanceScore = 0.0;
     }
+    public String getBaseSource() {
+        return baseSource;
+    }
+
+    public void setBaseSource(String baseSource) {
+        this.baseSource = baseSource;
+    }
+
+    public double getRelevanceScore() {
+        return relevanceScore;
+    }
+
+    public void setRelevanceScore(double relevanceScore) {
+        this.relevanceScore = relevanceScore;
+    }
+
+    @Override
+    public boolean isPersonalized() {
+        return true;
+    }
+
+
 
 }
