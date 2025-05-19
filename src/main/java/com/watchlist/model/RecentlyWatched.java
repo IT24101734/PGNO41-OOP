@@ -109,4 +109,15 @@ public class RecentlyWatched {
         return sb.toString();
 }
 
+    // Create RecentlyWatched from string representation (from file)
+    public static RecentlyWatched fromFileString(String fileString) {
+        String[] parts = fileString.split(",");
+
+        if (parts.length >= 2) {
+                String userId = parts[0];
+                int maxSize = Integer.parseInt(parts[1]);
+
+        RecentlyWatched recentlyWatched = new RecentlyWatched(userId, maxSize);
+
+
 
