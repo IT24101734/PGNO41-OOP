@@ -120,4 +120,20 @@ public class RecentlyWatched {
         RecentlyWatched recentlyWatched = new RecentlyWatched(userId, maxSize);
 
 
+            // Parse movie IDs and watch dates
+            for (int i = 2; i < parts.length; i += 2) {
+                if (i + 1 < parts.length) {
+                    String movieId = parts[i];
+                    Date watchDate = new Date(Long.parseLong(parts[i + 1]));
+
+                    recentlyWatched.movieIds.push(movieId);
+                    recentlyWatched.watchDates.push(watchDate);
+                }
+            }
+
+            return recentlyWatched;
+        }
+
+        return null;
+    }
 
