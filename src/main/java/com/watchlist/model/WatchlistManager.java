@@ -233,3 +233,76 @@ public class WatchlistManager {
             System.out.println("Added to watchlist successfully");
             return watchlist;
         }
+
+
+        // Get watchlist by user ID
+        public List<Watchlist> getWatchlistByUser(String userId) {
+            List<Watchlist> userWatchlist = new ArrayList<>();
+
+            for (Watchlist watchlist : watchlists) {
+                if (watchlist.getUserId().equals(userId)) {
+                    userWatchlist.add(watchlist);
+                }
+            }
+
+            return userWatchlist;
+        }
+
+        // Get unwatched movies by user
+        public List<Watchlist> getUnwatchedByUser(String userId) {
+            List<Watchlist> unwatched = new ArrayList<>();
+
+            for (Watchlist watchlist : watchlists) {
+                if (watchlist.getUserId().equals(userId) && !watchlist.isWatched()) {
+                    unwatched.add(watchlist);
+                }
+            }
+
+            return unwatched;
+        }
+
+        // Get watched movies by user
+        public List<Watchlist> getWatchedByUser(String userId) {
+            List<Watchlist> watched = new ArrayList<>();
+
+            for (Watchlist watchlist : watchlists) {
+                if (watchlist.getUserId().equals(userId) && watchlist.isWatched()) {
+                    watched.add(watchlist);
+                }
+            }
+
+            return watched;
+        }
+
+        // Check if movie is in user's watchlist
+        public boolean isInWatchlist(String userId, String movieId) {
+            for (Watchlist watchlist : watchlists) {
+                if (watchlist.getUserId().equals(userId) && watchlist.getMovieId().equals(movieId)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // Get watchlist by ID
+        public Watchlist getWatchlistById(String watchlistId) {
+            for (Watchlist watchlist : watchlists) {
+                if (watchlist.getWatchlistId().equals(watchlistId)) {
+                    return watchlist;
+                }
+            }
+
+            return null;
+        }
+
+        // Get watchlist by user and movie
+        public Watchlist getWatchlistByUserAndMovie(String userId, String movieId) {
+            for (Watchlist watchlist : watchlists) {
+                if (watchlist.getUserId().equals(userId) && watchlist.getMovieId().equals(movieId)) {
+                    return watchlist;
+                }
+            }
+
+            return null;
+        }
