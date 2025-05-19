@@ -1,10 +1,7 @@
 package com.movierental.model.recommendation;
 
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 public class RecommendationManager {
     private static final String RECOMMENDATION_FILE_NAME = "recommendations.txt";
@@ -114,6 +111,26 @@ public class RecommendationManager {
             System.out.println("Loaded " + recommendations.size() + " recommendations from " + dataFilePath);
         } catch (IOException e) {
             System.err.println("Error loading recommendations: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    private void saveRecommendations() {
+        try {
+            // Ensure parent directory exists
+            File file = new File(dataFilePath);
+            if (file.getParentFile() != null && !file.getParentFile().exists()) {
+                file.getParentFile().mkdirs();
+            }
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(dataFilePath))) {
+                for (Recommendation recommendation : recommendations) {
+                    writer.write(recommendation.toFileString());
+                    writer.newLine();
+                }
+            }
+            System.out.println("Saved " + recommendations.size() + " recommendations to " + dataFilePath);
+        } catch (IOException e) {
+            System.err.println("Error saving recommendations: " + e.getMessage());
             e.printStackTrace();
         }
     }
