@@ -306,3 +306,105 @@ public class WatchlistManager {
 
             return null;
         }
+
+        // Update watchlist
+        public boolean updateWatchlist(Watchlist watchlist) {
+            for (int i = 0; i < watchlists.size(); i++) {
+                if (watchlists.get(i).getWatchlistId().equals(watchlist.getWatchlistId())) {
+                    watchlists.set(i, watchlist);
+                    saveWatchlists();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // Mark as watched
+        public boolean markAsWatched(String watchlistId) {
+            Watchlist watchlist = getWatchlistById(watchlistId);
+
+            if (watchlist == null) {
+                return false;
+            }
+
+            watchlist.markAsWatched();
+            saveWatchlists();
+
+            // Add to recently watched
+            addToRecentlyWatched(watchlist.getUserId(), watchlist.getMovieId());
+
+            return true;
+        }
+
+        // Remove from watchlist by watchlist ID
+        public boolean removeFromWatchlist(String watchlistId) {
+            for (int i = 0; i < watchlists.size(); i++) {
+                if (watchlists.get(i).getWatchlistId().equals(watchlistId)) {
+                    watchlists.remove(i);
+                    saveWatchlists();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // Remove from watchlist by user ID and movie ID
+        public boolean removeFromWatchlist(String userId, String movieId) {
+            for (int i = 0; i < watchlists.size(); i++) {
+                if (watchlists.get(i).getUserId().equals(userId) &&
+                        watchlists.get(i).getMovieId().equals(movieId)) {
+                    watchlists.remove(i);
+                    saveWatchlists();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // Get recently watched for a user
+        public RecentlyWatched getRecentlyWatched(String userId) {
+            if (recentlyWatchedMap.containsKey(userId)) {
+                return recentlyWatchedMap.get(userId);
+            } else {
+                // Create new entry if doesn't exist
+                RecentlyWatched recentlyWatched = new RecentlyWatched(userId);
+                recentlyWatchedMap.put(userId, recentlyWatched);
+                saveRecentlyWatched();
+                return recentlyWatched;
+            }
+        }
+
+        // Add to recently watched
+        public void addToRecentlyWatched(String userId, String movieId) {
+            RecentlyWatched recentlyWatched = getRecentlyWatched(userId);
+            recentlyWatched.addMovie(movieId);
+            saveRecentlyWatched();
+        }
+
+        // Clear recently watched for a user
+        public void clearRecentlyWatched(String userId) {
+            if (recentlyWatchedMap.containsKey(userId)) {
+                recentlyWatchedMap.get(userId).clear();
+                saveRecentlyWatched();
+            }
+        }
+
+        // Get all watchlists
+        public List<Watchlist> getAllWatchlists() {
+            return new ArrayList<>(watchlists);
+        }
+
+        // Sort watchlists by priority
+        public List<Watchlist> sortByPriority(List<Watchlist> watchlistToSort) {
+            List<Watchlist> sorted = new ArrayList<>(watchlistToSort);
+            Collections.sort(sorted, new Comparator<Watchlist>() {
+                @Override
+                public int compare(Watchlist w1, Watchlist w2) {
+                    return Integer.compare(w1.getPriority(), w2.getPriority());
+                }
+            });
+            return sorted;
+        }
