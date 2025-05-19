@@ -190,3 +190,17 @@ public class WatchlistManager {
                 e.printStackTrace();
             }
         }
+
+
+        // Add to watchlist
+        public Watchlist addToWatchlist(String userId, String movieId, int priority, String notes) {
+            // Check if movie exists - use the MovieManager with ServletContext
+            MovieManager movieManager = (servletContext != null) ?
+                    new MovieManager(servletContext) :
+                    new MovieManager();
+            Movie movie = movieManager.getMovieById(movieId);
+
+            if (movie == null) {
+                System.out.println("Movie not found: " + movieId);
+                return null; // Movie doesn't exist
+            }
