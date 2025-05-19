@@ -1,10 +1,7 @@
 package com.movierental.model.review;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class ReviewManager {
     private static final String REVIEW_FILE_NAME = "reviews.txt";
@@ -187,3 +184,206 @@ public class ReviewManager {
         return review;
     }
 }
+
+
+public boolean updateReview(String reviewId, String userId, String comment, int rating) {
+    for(int i = 0; i < this.reviews.size(); ++i) {
+        Review review = (Review)this.reviews.get(i);
+        if (review.getReviewId().equals(reviewId)) {
+            if (userId != null && !userId.equals(review.getUserId())) {
+                return false;
+            }
+
+            review.setComment(comment);
+            review.setRating(this.validateRating(rating));
+            this.saveReviews();
+            this.updateMovieRating(review.getMovieId());
+            return true;
+        }
+    }
+
+    return false;
+}
+
+public boolean deleteReview(String reviewId, String userId) {
+    for(int i = 0; i < this.reviews.size(); ++i) {
+        Review review = (Review)this.reviews.get(i);
+        if (review.getReviewId().equals(reviewId)) {
+            if (userId != null && !userId.equals(review.getUserId())) {
+                return false;
+            }
+
+            String movieId = review.getMovieId();
+            this.reviews.remove(i);
+            this.saveReviews();
+            this.updateMovieRating(movieId);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+public Review getReviewById(String reviewId) {
+    for(Review review : this.reviews) {
+        if (review.getReviewId().equals(reviewId)) {
+            return review;
+        }
+    }
+
+    return null;
+}
+
+public List<Review> getReviewsByMovie(String movieId) {
+    List<Review> movieReviews = new ArrayList();
+
+    for(Review review : this.reviews) {
+        if (review.getMovieId().equals(movieId)) {
+            movieReviews.add(review);
+        }
+    }
+
+    Collections.sort(movieReviews, new Comparator<Review>() {
+        public int compare(Review r1, Review r2) {
+            return r2.getReviewDate().compareTo(r1.getReviewDate());
+        }
+    });
+    return movieReviews;
+}
+
+public List<Review> getReviewsByUser(String userId) {
+    List<Review> userReviews = new ArrayList();
+
+    for(Review review : this.reviews) {
+        if (userId.equals(review.getUserId())) {
+            userReviews.add(review);
+        }
+    }
+
+    Collections.sort(userReviews, new Comparator<Review>() {
+        public int compare(Review r1, Review r2) {
+            return r2.getReviewDate().compareTo(r1.getReviewDate());
+        }
+    });
+    return userReviews;
+}
+
+public boolean hasUserReviewedMovie(String userId, String movieId) {
+    for(Review review : this.reviews) {
+        if (review.getMovieId().equals(movieId) && userId.equals(review.getUserId())) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+public Review getUserReviewForMovie(String userId, String movieId) {
+    for(Review review : this.reviews) {
+        if (review.getMovieId().equals(movieId) && userId.equals(review.getUserId())) {
+            return review;
+        }
+    }
+
+    return null;
+}
+
+public double calculateAverageRating(String movieId) {
+    List<Review> movieReviews = this.getReviewsByMovie(movieId);
+    if (movieReviews.isEmpty()) {
+        return (double)0.0F;
+    } else {
+        int totalRating = 0;
+
+        for(Review review : movieReviews) {
+            totalRating += review.getRating();
+        }
+
+        return (double)totalRating / (double)movieReviews.size();
+    }
+}
+
+public int countVerifiedReviews(String movieId) {
+    int count = 0;
+
+    for(Review review : this.reviews) {
+        if (review.getMovieId().equals(movieId) && review.isVerified()) {
+            ++count;
+        }
+    }
+
+    return count;
+}
+
+public int countGuestReviews(String movieId) {
+    int count = 0;
+
+    for(Review review : this.reviews) {
+        if (review.getMovieId().equals(movieId) && !review.isVerified()) {
+            ++count;
+        }
+    }
+
+    return count;
+}
+
+public Map<Integer, Integer> getRatingDistribution(String movieId) {
+    Map<Integer, Integer> distribution = new HashMap();
+
+    for(int i = 1; i <= 5; ++i) {
+        distribution.put(i, 0);
+    }
+
+    for(Review review : this.reviews) {
+        if (review.getMovieId().equals(movieId)) {
+            int rating = review.getRating();
+            distribution.put(rating, (Integer)distribution.get(rating) + 1);
+        }
+    }
+
+    return distribution;
+}
+
+public List<Review> getAllReviews() {
+    return new ArrayList(this.reviews);
+}
+
+public List<Review> getRecentReviews(int count) {
+    List<Review> allReviews = new ArrayList(this.reviews);
+    Collections.sort(allReviews, new Comparator<Review>() {
+        public int compare(Review r1, Review r2) {
+            return r2.getReviewDate().compareTo(r1.getReviewDate());
+        }
+    });
+    int limit = Math.min(count, allReviews.size());
+    return allReviews.subList(0, limit);
+}
+
+private void updateMovieRating(String movieId) {
+    double averageRating = this.calculateAverageRating(movieId);
+    averageRating = (double)Math.round(averageRating * (double)10.0F) / (double)10.0F;
+    MovieManager movieManager = new MovieManager(this.servletContext);
+    Movie movie = movieManager.getMovieById(movieId);
+    if (movie != null) {
+        movie.setRating(averageRating);
+        movieManager.updateMovie(movie);
+    }
+
+}
+
+private int validateRating(int rating) {
+    if (rating < 1) {
+        return 1;
+    } else {
+        return rating > 5 ? 5 : rating;
+    }
+}
+
+public void setServletContext(ServletContext servletContext) {
+    this.servletContext = servletContext;
+    this.initializeFilePath();
+    this.reviews.clear();
+    this.loadReviews();
+}
+}
+
