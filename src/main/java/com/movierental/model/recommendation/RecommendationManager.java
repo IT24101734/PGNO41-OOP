@@ -495,6 +495,16 @@ public class RecommendationManager {
         }
 
         return null;
+    }public boolean deleteUserRecommendations(String userId) {
+        if (userId == null) {
+            return false;
+        }
+
+        boolean removed = recommendations.removeIf(rec -> userId.equals(rec.getUserId()));
+        if (removed) {
+            saveRecommendations();
+        }
+        return removed;
     }
 
 
