@@ -420,6 +420,22 @@ public class RecommendationManager {
         }
 
         return genreRecs;
+    }private boolean isRecommendationsStale(List<? extends Recommendation> recs) {
+        if (recs.isEmpty()) {
+            return true;
+        }
+
+        Date now = new Date();
+        long dayInMillis = 24 * 60 * 60 * 1000; // 24 hours
+
+        // Check if any recommendation is older than 24 hours
+        for (Recommendation rec : recs) {
+            if (now.getTime() - rec.getGeneratedDate().getTime() > dayInMillis) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
