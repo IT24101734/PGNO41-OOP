@@ -393,6 +393,33 @@ public class RecommendationManager {
         }
 
         return topRated;
+    }public List<GeneralRecommendation> getGenreRecommendations(String genre) {
+        String categoryPattern = "genre-" + genre.toLowerCase();
+        List<GeneralRecommendation> genreRecs = new ArrayList<>();
+
+        for (Recommendation rec : recommendations) {
+            if (!rec.isPersonalized() &&
+                    rec instanceof GeneralRecommendation &&
+                    categoryPattern.equals(((GeneralRecommendation) rec).getCategory())) {
+                genreRecs.add((GeneralRecommendation) rec);
+            }
+        }
+
+        // Sort by rank
+        Collections.sort(genreRecs, new Comparator<GeneralRecommendation>() {
+            @Override
+            public int compare(GeneralRecommendation r1, GeneralRecommendation r2) {
+                return Integer.compare(r1.getRank(), r2.getRank());
+            }
+        });
+
+        // Generate if empty
+        if (genreRecs.isEmpty()) {
+            generateGeneralRecommendations();
+            return getGenreRecommendations(genre);
+        }
+
+        return genreRecs;
     }
 
 
