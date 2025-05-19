@@ -455,6 +455,20 @@ public class RecommendationManager {
         recommendations.add(recommendation);
         saveRecommendations();
         return true;
+    }public boolean updateRecommendation(Recommendation updatedRecommendation) {
+        if (updatedRecommendation == null || updatedRecommendation.getRecommendationId() == null) {
+            return false;
+        }
+
+        for (int i = 0; i < recommendations.size(); i++) {
+            if (recommendations.get(i).getRecommendationId().equals(updatedRecommendation.getRecommendationId())) {
+                recommendations.set(i, updatedRecommendation);
+                saveRecommendations();
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
