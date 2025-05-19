@@ -2,6 +2,7 @@ package com.movierental.model.recommendation;
 
 
 import java.io.*;
+import java.util.*;
 
 public class RecommendationManager {
     private static final String RECOMMENDATION_FILE_NAME = "recommendations.txt";
@@ -133,6 +134,79 @@ public class RecommendationManager {
             System.err.println("Error saving recommendations: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+    public List<GeneralRecommendation> generateGeneralRecommendations() {
+        // Clear existing general recommendations
+        recommendations.removeIf(rec -> !rec.isPersonalized());
+
+        List<GeneralRecommendation> generalRecommendations = new ArrayList<>();
+
+        // Generate top-rated recommendations
+        List<Movie> topRatedMovies = movieManager.getTopRatedMovies(20); // Get top 20 rated movies
+
+        int rank = 1;
+        for (Movie movie : topRatedMovies) {
+            GeneralRecommendation recommendation = new GeneralRecommendation();
+            recommendation.setRecommendationId(UUID.randomUUID().toString());
+            recommendation.setMovieId(movie.getMovieId());
+            recommendation.setGeneratedDate(new Date());
+            recommendation.setScore(movie.getRating()); // Use movie rating as score
+            recommendation.setReason("This movie is one of our top-rated films with a rating of " + movie.getRating());
+            recommendation.setCategory("top-rated");
+            recommendation.setRank(rank++);
+
+            generalRecommendations.add(recommendation);
+            recommendations.add(recommendation);
+        }
+
+        // Get all unique genres
+        Set<String> genres = new HashSet<>();
+        for (Movie movie : movieManager.getAllMovies()) {
+            genres.add(movie.getGenre());
+        }
+
+        // Generate recommendations by genre
+        for (String genre : genres) {
+            List<Movie> genreMovies = new ArrayList<>();
+            for (Movie movie : movieManager.getAllMovies()) {
+                if (movie.getGenre().equals(genre)) {
+                    genreMovies.add(movie);
+                }
+            }
+
+            // Sort by rating using bubble sort algorithm (for educational purposes)
+            for (int i = 0; i < genreMovies.size() - 1; i++) {
+                for (int j = 0; j < genreMovies.size() - i - 1; j++) {
+                    if (genreMovies.get(j).getRating() < genreMovies.get(j + 1).getRating()) {
+                        // Swap movies
+                        Movie temp = genreMovies.get(j);
+                        genreMovies.set(j, genreMovies.get(j + 1));
+                        genreMovies.set(j + 1, temp);
+                    }
+                }
+            }
+
+            // Take top 5 movies per genre
+            int genreRank = 1;
+            for (int i = 0; i < Math.min(5, genreMovies.size()); i++) {
+                Movie movie = genreMovies.get(i);
+
+                GeneralRecommendation recommendation = new GeneralRecommendation();
+                recommendation.setRecommendationId(UUID.randomUUID().toString());
+                recommendation.setMovieId(movie.getMovieId());
+                recommendation.setGeneratedDate(new Date());
+                recommendation.setScore(movie.getRating());
+                recommendation.setReason("This is one of the top-rated " + genre + " movies");
+                recommendation.setCategory("genre-" + genre.toLowerCase());
+                recommendation.setRank(genreRank++);
+
+                generalRecommendations.add(recommendation);
+                recommendations.add(recommendation);
+            }
+        }
+
+        saveRecommendations();
+        return generalRecommendations;
     }
 
 
